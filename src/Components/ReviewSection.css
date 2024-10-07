@@ -1,0 +1,36 @@
+/* ReviewSection.css */
+
+.review-section {
+    /* You can add styles specific to the section here */
+  }
+  
+  .review-title {
+    color: var(--primary); /* Assuming you have defined a CSS variable for primary color */
+  }
+  
+  .review-grid {
+    display: grid;
+    gap: 8px;
+  }
+  
+  .review-card {
+    background: white;
+    border-radius: 0.5rem; /* Equivalent to rounded-lg */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-lg */
+    padding: 1.5rem; /* Equivalent to p-6 */
+  }
+  
+  .review-rating {
+    display: flex;
+    align-items: center;
+  }
+  
+  .review-content {
+    color: #4a4a4a; /* Equivalent to text-gray-700 */
+  }
+  
+  .review-author {
+    color: #6b7280; /* Equivalent to text-gray-600 */
+    font-weight: 600; /* Equivalent to font-semibold */
+  }
+  

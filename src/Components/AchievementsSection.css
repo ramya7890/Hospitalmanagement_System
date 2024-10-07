@@ -1,0 +1,22 @@
+.achievements-section {
+    margin-bottom: 4rem; /* Tailwind's mb-16 */
+  }
+  
+  .achievement-card {
+    background-color: white;
+    border-radius: 0.5rem; /* Tailwind's rounded-lg */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Tailwind's shadow-lg */
+    padding: 1.5rem; /* Tailwind's p-6 */
+    text-align: center;
+  }
+  
+  .text-primary {
+    color: #1d4ed8; /* Example primary color */
+  }
+  
+  .text-gray-600 {
+    color: #4b5563; /* Example gray color */
+  }
+  
+  /* Add any additional styles as necessary */
+  
