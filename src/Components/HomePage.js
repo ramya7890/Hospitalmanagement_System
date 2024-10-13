@@ -5,12 +5,13 @@ import ReviewSection from './ReviewSection';
 import AchievementsSection from './AchievementsSection';
 import './HomePage.css'
 
-const Home = () => {
+const HomePage = () => {
   const doctors = [
     { id: 1, name: 'Dr. John Doe', specialty: 'Cardiologist', image: '/Doctor1.jpg' },
     { id: 2, name: 'Dr. Jane Smith', specialty: 'Neurologist', image: '/Doctor2.jpg' },
     { id: 3, name: 'Dr. Mike Johnson', specialty: 'Pediatrician', image: '/Doctor3.jpg' },
     { id: 4, name: 'Dr. Mike Johnson', specialty: 'Pediatrician', image: '/Doctor3.jpg' },
+    
   ];
 
   return (
@@ -73,4 +74,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomePage;

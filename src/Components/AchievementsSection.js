@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import './AchievementsSection.css'; // Import the CSS file
+import './AchievementsSection.css'; 
 
 const achievements = [
   { id: 1, title: 'Best Hospital Award', year: '2022' },

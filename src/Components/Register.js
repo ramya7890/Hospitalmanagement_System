@@ -4,7 +4,8 @@ import './Register.css'
 
  function Register() {
     const [patientDetails, setPatientDetails] = useState({firstName:'', middleName:'', lastName:'',
-        dob: '',address: '', mobile:'',
+        dob: '',address: '', state: '',
+        country: '',mobile:'',
         relativeName:'', relativeMobile:'',
         illnessDetails:'', password:'', confirmPassword:'',
  });
@@ -54,6 +55,12 @@ import './Register.css'
       <label htmlFor='address'>Address*</label>
       <input type='text' name ="address" placeholder="Address"
       onChange={handleChange}/>
+      <label htmlFor='state'>State*</label>
+       <input type='text' name="state" placeholder="State" 
+       onChange={handleChange}  />
+        <label htmlFor='country'>Country*</label>
+       <input type='text' name="country" placeholder="Country" 
+       onChange={handleChange}  />
       <label htmlFor='mobile'>Mobile*</label>
        <input type='text' name ="mobile" placeholder="Mobile"
       onChange={handleChange}/>

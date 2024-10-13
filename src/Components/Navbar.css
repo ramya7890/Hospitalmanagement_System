@@ -2,6 +2,7 @@ Nav.css
 .nav-container {
   background-color: #f8f9fa;
   padding: 10px;
+  margin: auto;
 }
 
 .nav-container ul {
@@ -25,11 +26,11 @@ Nav.css
 
 /* Navbar.css */
 .nav-container {
-  margin-top: 20px;
+  margin-top: 0%;
   display: flex;
   justify-content: space-between; /* Aligns items to the ends */
   align-items: center; /* Centers items vertically */
-  background-color: gray; /* A professional blue */
+  background-color: #2d3748; /* A professional blue */
   padding: 10px ; /* More padding for better appearance */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
@@ -46,7 +47,7 @@ Nav.css
 
 .nav-container ul li a {
   text-decoration: none;
-  color: white; /* White text for contrast */
+  color:black; /* White text for contrast */
   font-weight: bold; /* Makes the text bold */
   padding: 10px 15px; /* Adds padding around links */
   border-radius: 4px; /* Rounded corners for links */
