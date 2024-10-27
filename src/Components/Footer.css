@@ -76,4 +76,15 @@
  .footer-bottom p {
    font-size: 0.875rem; /* text-sm */
  }
- 
+ h3 {
+  margin-top: 30px;
+  color: white;
+  font-family: 'Arial', sans-serif;
+}
+
+p {
+  text-align: center;
+  font-weight: bold;
+  color: #ccc;
+  margin-top: 10px;
+}

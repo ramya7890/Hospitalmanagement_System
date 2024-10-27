@@ -19,7 +19,7 @@ const PatientLandingScreen = () => {
        {/* Reports Section */}
        <section className="reports-section">
         <h2>Reports</h2>
-        {reports.length === 0 ? (
+        {reports.length === 0 ? ( //ternary operator
           <p>No reports available.</p>
         ) : (
           <ul>

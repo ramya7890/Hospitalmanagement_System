@@ -6,8 +6,9 @@ import PatientLogin from './PatientLogin';
 import AdminLogin from './AdminLogin';
 import Register from './Register';
 import AddDoctor from './AddDoctor';
-import AddPatient from './AddPatient';
-import PatientDashboard from './PatientDashboard';
+import EditPatient from './EditPatient';
+import BookingAppointment from './BookingAppointment'
+import AddAdmin from './AddAdmin';
 import FindDoctor from './FindDoctor';
 import Navbar from './Navbar'; // Import the Nav component
 const  Header = () => {
@@ -20,8 +21,9 @@ const  Header = () => {
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/add-doctor" element={<AddDoctor />} />
-        <Route path="/add-patient" element={<AddPatient />} />
-        <Route path="/patient-dashboard" element={<PatientDashboard />} />
+        <Route path="/edit-patient" element={<EditPatient />} />
+        <Route path="/addadmin" element={<AddAdmin />} />
+        <Route path="/bookingAppointment" element={<BookingAppointment />} />
         <Route path="/find-doctor" element={<FindDoctor />} />
       </Routes>
     </div>

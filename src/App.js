@@ -2,20 +2,23 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import PatientLandingScreen from './Pages/PatientLandingScreen';
 import AdminLandingScreen from './Pages/AdminLandingScreen';
-import AddPatient from './Components/AddPatient';
+import EditPatient from './Components/EditPatient';
 import AddDoctor from './Components/AddDoctor';
 import Header from './Components/Header';
 import HomePage from './Components/HomePage';
 import Footer from './Components/Footer';
+import AddAdmin from './Components/AddAdmin';
 import About from './Pages/About';
 import Service from './Pages/Service';
 import Contact from './Pages/Contact';
 import FindDoctor from './Components/FindDoctor';
 
+
 const App = () => {
   return (
     <div>
-      <Header />
+      <Header/>
+     
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/pages/About" element={<About />} />
@@ -24,10 +27,11 @@ const App = () => {
         <Route path="/Pages/Patientlandingscreen" element={<PatientLandingScreen />} />
         <Route path="/Pages/AdminLandingscreen" element={<AdminLandingScreen />} />
         <Route path="/Components/AddDoctor" element={<AddDoctor />} />
-        <Route path="/Components/AddPatient" element={<AddPatient />} />
+        <Route path="/Components/AddAdmin" element={<AddAdmin />} />
+        <Route path="/Components/EditPatient" element={<EditPatient />} />
         <Route path="/Components/FindDoctor" element={<FindDoctor />} />
       </Routes>
-      <Footer />
+      <Footer/>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import DoctorCard from './DoctorCard';
@@ -7,10 +8,10 @@ import './HomePage.css'
 
 const HomePage = () => {
   const doctors = [
-    { id: 1, name: 'Dr. John Doe', specialty: 'Cardiologist', image: '/Doctor1.jpg' },
-    { id: 2, name: 'Dr. Jane Smith', specialty: 'Neurologist', image: '/Doctor2.jpg' },
-    { id: 3, name: 'Dr. Mike Johnson', specialty: 'Pediatrician', image: '/Doctor3.jpg' },
-    { id: 4, name: 'Dr. Mike Johnson', specialty: 'Pediatrician', image: '/Doctor3.jpg' },
+    { id: 1, name: 'Dr. Prashanth', specialty: 'Cardiologist', image: '/Doctor1.jpg' },
+    { id: 2, name: 'Dr. Jan', specialty: 'Dermatologist', image: '/Doctor2.jpg' },
+    { id: 3, name: 'Dr.Charu', specialty: 'Pediatrician', image: '/Doctor3.jpg' },
+    { id: 4, name: 'Dr.Santhosh', specialty: 'Neurologist', image: '/Doctor4.jpg' },
     
   ];
 
@@ -51,7 +52,9 @@ const HomePage = () => {
         <h2 className="text-3xl font-bold mb-8 text-center text-primary">Our Doctors</h2>
         <div className="grid md:grid-cols-3 gap-8">
           {doctors.map((doctor) => (
-            <DoctorCard key={doctor.id} doctor={doctor} />
+            <DoctorCard 
+            key={doctor.id} 
+            doctor={doctor} />
           ))}
         </div>
       </section>

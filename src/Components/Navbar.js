@@ -15,7 +15,7 @@ const Nav = () => {
           <li><Link to="/Pages/Contact">Contact</Link></li>
         </ul>
       </div>
-      <div className="other-options">
+      <div>
         <ul>
           <li><Link to="/patientlogin">Patient Login</Link></li>
           <li><Link to="/adminlogin">Admin Login</Link></li>
