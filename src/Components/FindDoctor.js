@@ -124,7 +124,7 @@ const FindDoctor = () => {
                     <td>{patient.mobile}</td>
                     <td>
                       {!appointmentDetails && (
-                        <button onClick={() => handlePatientSelect(patient)}>
+                        <button  onClick={() => handlePatientSelect(patient)}>
                           Find Doctor
                         </button>
                       )}

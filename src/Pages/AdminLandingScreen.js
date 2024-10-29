@@ -35,7 +35,7 @@ const AdminLandingScreen = () => {
       <header className="admin-header">Admin Dashboard</header>
       <main className="admin-content">
         <h1>Welcome to the Admin Panel</h1>
-        <p>Here you can manage users, view reports, and adjust settings.</p>
+        <p>Here you can manage Patient details, Add doctor details, View reports, Add admin details and Book appointments.</p>
       </main>
       
       <nav className="admin-nav">

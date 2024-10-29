@@ -1,49 +1,59 @@
-import React , { useState} from 'react';
+// PatientLogin.js
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './PatientLogin.css'
-
+import './PatientLogin.css';
 
 function PatientLogin() {
-   const [credentials,setCredentials] = useState({uniqueId:'',password:''});
-   const handleChange = (e) => {
+  const [credentials, setCredentials] = useState({ uniqueId: '', password: '' });
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setCredentials({ ...credentials, [name]: value });
   };
-  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulated login check
-    if (credentials.uniqueId && credentials.password) {
-      alert("Login successful!");
-      navigate("/Pages/PatientLandingScreen")
+
+    const existingPatients = JSON.parse(localStorage.getItem('patients')) || [];
+    const authenticatedPatient = existingPatients.find(
+      (patient) => patient.uniqueId === credentials.uniqueId && patient.password === credentials.password
+    );
+
+    if (authenticatedPatient) {
+      alert('Login successful!');
+      navigate('/Pages/PatientLandingScreen'); // Redirects to patient details page
     } else {
-      alert("Please provide valid credentials.");
+      alert('Invalid ID or password.');
     }
   };
 
   return (
-    
-    <div className="login-container">
-      
-    <h2>Patient</h2>
-    <form onSubmit={handleSubmit}>
-        <input type="text"
-        name="uniqueId" placeholder="UniqueID" onChange={handleChange}/>
-         <input type="password"
-        name="password" placeholder="Password" onChange={handleChange}/>
-    {/* <div className="radio-group">
-       <input type="radio" name="userType" value="patient" checked={userType==='patient'} onChange={() =>
-        setUserType('patient')} /> Patient 
-        <input type="radio" name="userType" value="admin" checked={userType==='admin'} onChange={() =>
-        setUserType('admin')} /> Admin 
-    </div>  */}
-    <button type="submit">Login</button> 
-    <div className="new-user">
-      <p>Not a member?</p><p><a href="/register">Register</a></p>
-    </div> 
-    </form>
+    <div className="patient-login-container">
+      <h2 className="patient-login-title">Patient Login</h2>
+      <form className="patient-login-form" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="uniqueId"
+          placeholder="Unique ID"
+          className="patient-login-input"
+          onChange={handleChange}
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          className="patient-login-input"
+          onChange={handleChange}
+        />
+        <button type="submit" className="patient-login-button">Login</button>
+        <div className="patient-login-new-user">
+          <p>Not a member?</p>
+          <a href="/register" className="patient-login-register-link">Register</a>
+        </div>
+      </form>
     </div>
-  )
+  );
 }
-export default PatientLogin;
 
+export default PatientLogin;

@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Register.css';
- 
+
 function Register() {
   const [patientDetails, setPatientDetails] = useState({
     firstName: '',
@@ -9,55 +10,60 @@ function Register() {
     lastName: '',
     dob: '',
     address: '',
-    location: '', // Added location field
+    location: '',
     state: '',
     country: '',
     mobile: '',
+    relativeName: '',
+    relativeMobile: '',
     illnessDetails: '',
     password: '',
     confirmPassword: '',
   });
- 
+
   const navigate = useNavigate();
- 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPatientDetails({ ...patientDetails, [name]: value });
   };
- 
+
   const generateUniqueId = () => {
     const timestamp = Date.now();
     const randomNumber = Math.floor(Math.random() * 1000);
     return `${timestamp}-${randomNumber}`;
   };
- 
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (patientDetails.password === patientDetails.confirmPassword) {
+    
+    const existingPatients = JSON.parse(localStorage.getItem('patients')) || [];
+    const duplicatePatient = existingPatients.find((patient) => patient.mobile === patientDetails.mobile);
+    
+    if (duplicatePatient) {
+      alert('This mobile number is already registered. Please log in.');
+    } else if (patientDetails.password !== patientDetails.confirmPassword) {
+      alert('Passwords do not match');
+    } else {
       const uniqueId = generateUniqueId();
       const newPatient = { ...patientDetails, uniqueId };
-     
-      // Save the new patient details to local storage
-      const existingPatients = JSON.parse(localStorage.getItem('patients')) || [];
       localStorage.setItem('patients', JSON.stringify([...existingPatients, newPatient]));
- 
+
       alert('Successfully registered! Your ID is ' + uniqueId);
       navigate("/PatientLogin");
-    } else {
-      alert('Passwords do not match');
     }
   };
- 
+
   return (
     <div className="register-container">
-      <h2>Patient Registration</h2>
-      <form onSubmit={handleSubmit}>
+      <h2 className="register-title">Patient Registration</h2>
+      <form className="register-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="firstName">First Name*</label>
           <input type="text" name="firstName" placeholder="Enter First Name" onChange={handleChange} required />
         </div>
         <div className="form-group">
-          <label htmlFor="middleName">Middle Name*</label>
+          <label htmlFor="middleName">Middle Name</label>
           <input type="text" name="middleName" placeholder="Enter Middle Name" onChange={handleChange} />
         </div>
         <div className="form-group">
@@ -73,7 +79,7 @@ function Register() {
           <input type="text" name="address" placeholder="Address" onChange={handleChange} required />
         </div>
         <div className="form-group">
-          <label htmlFor="location">Location*</label>  {/* Added location input below address */}
+          <label htmlFor="location">Location*</label>
           <input type="text" name="location" placeholder="Enter Location" onChange={handleChange} required />
         </div>
         <div className="form-group">
@@ -89,11 +95,11 @@ function Register() {
           <input type="text" name="mobile" placeholder="Mobile" onChange={handleChange} required />
         </div>
         <div className="form-group">
-          <label htmlFor="relativeName">Relative Name*</label>
+          <label htmlFor="relativeName">Relative Name</label>
           <input type="text" name="relativeName" placeholder="Relative Name" onChange={handleChange} />
         </div>
         <div className="form-group">
-          <label htmlFor="relativeMobile">Relative Mobile*</label>
+          <label htmlFor="relativeMobile">Relative Mobile</label>
           <input type="text" name="relativeMobile" placeholder="Relative Mobile" onChange={handleChange} />
         </div>
         <div className="form-group full-width">
@@ -108,11 +114,10 @@ function Register() {
           <label htmlFor="confirmPassword">Confirm Password*</label>
           <input type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleChange} required />
         </div>
-        <button type="submit">Register</button>
+        <button type="submit" className="register-button">Register</button>
       </form>
     </div>
   );
 }
- 
+
 export default Register;
- 
