@@ -1,45 +1,65 @@
-import React ,{useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './AdminLogin.css'
+import './AdminLogin.css';
 
 const AdminLogin = () => {
-  const [credentials,setCredentials] = useState({uniqueId:'',password:''});
-   const handleChange = (e) => {
+  const [credentials, setCredentials] = useState({ uniqueId: '', password: '' });
+  const [adminList, setAdminList] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedAdmins = JSON.parse(localStorage.getItem('admins')) || [];
+    setAdminList(savedAdmins);
+  }, []);
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setCredentials({ ...credentials, [name]: value });
   };
-  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulated login check
-    if (credentials.uniqueId && credentials.password) {
+
+    const defaultId = '123456';
+    const defaultPassword = 'Ramya';
+
+    // Check if the credentials match the default or any registered admin
+    const isDefaultAdmin = credentials.uniqueId === defaultId && credentials.password === defaultPassword;
+    const isRegisteredAdmin = adminList.some((admin) => admin.id === credentials.uniqueId && admin.password === credentials.password
+    );
+
+    if (isDefaultAdmin || isRegisteredAdmin) {
       alert("Login successful!");
-      navigate("/Pages/AdminLandingScreen")
+      navigate("/Pages/AdminLandingScreen");
     } else {
-      alert("Please provide valid credentials.");
+      alert("Invalid credentials. Please try again.");
     }
   };
 
   return (
     <div className="login-container">
-      
-    <h2>Admin</h2>
-    <form onSubmit={handleSubmit}>
-        <input type="text"
-        name="uniqueId" placeholder="UniqueID" onChange={handleChange}/>
-         <input type="password"
-        name="password" placeholder="Password" onChange={handleChange}/>
-    {/* <div className="radio-group">
-       <input type="radio" name="userType" value="patient" checked={userType==='patient'} onChange={() =>
-        setUserType('patient')} /> Patient 
-        <input type="radio" name="userType" value="admin" checked={userType==='admin'} onChange={() =>
-        setUserType('admin')} /> Admin 
-    </div>  */}
-    <button type="submit">Login</button> 
-    
-    </form>
+      <h2>Admin Login</h2>
+      <form onSubmit={handleSubmit} className="login-form">
+        <input
+          type="text"
+          name="uniqueId"
+          placeholder="Unique ID"
+          value={credentials.uniqueId}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={credentials.password}
+          onChange={handleChange}
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
     </div>
-  )
-}
+  );
+};
 
-export default AdminLogin ;
+export default AdminLogin;
