@@ -107,7 +107,7 @@ const FindDoctor = () => {
                   <th>Location</th>
                   <th>State</th>
                   <th>Country</th>
-                  <th>Mobile</th>
+                  <th>mobileNumber</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -120,7 +120,7 @@ const FindDoctor = () => {
                     <td>{patient.location}</td>
                     <td>{patient.state}</td>
                     <td>{patient.country}</td>
-                    <td>{patient.mobile}</td>
+                    <td>{patient.mobileNumber}</td>
                     <td>
                       {!appointmentDetails && (
                         <button  onClick={() => handleFindPatient(patient)}>

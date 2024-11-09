@@ -8,11 +8,11 @@ function Register() {
     firstName: '',
     middleName: '',
     lastName: '',
-    dob: '',
+    dateOfBirth: '',
     address: '',
     state: '',
     country: '',
-    mobile: '',
+    mobileNumber: '',
     relativeName: '',
     relativeMobile: '',
     illnessDetails: '',
@@ -37,7 +37,7 @@ function Register() {
     e.preventDefault();
     
     const existingPatients = JSON.parse(localStorage.getItem('patients')) || [];
-    const duplicatePatient = existingPatients.find((patient) => patient.mobile === patientDetails.mobile);
+    const duplicatePatient = existingPatients.find((patient) => patient.mobileNumber === patientDetails.mobileNumber);
     
     if (duplicatePatient) {
       alert('This mobile number is already registered. Please log in.');
@@ -70,8 +70,8 @@ function Register() {
           <input type="text" name="lastName" placeholder="Enter Last Name" onChange={handleChange} required />
         </div>
         <div className="form-group">
-          <label htmlFor="dob">Date Of Birth*</label>
-          <input type="date" name="dob" onChange={handleChange} required />
+          <label htmlFor="dateOfBirth">Date Of Birth*</label>
+          <input type="date" name="dateOfBirth" onChange={handleChange} required />
         </div>
         <div className="form-group full-width">
           <label htmlFor="address">Address*</label>
@@ -90,8 +90,8 @@ function Register() {
           <input type="text" name="country" placeholder="Country" onChange={handleChange} required />
         </div>
         <div className="form-group">
-          <label htmlFor="mobile">Mobile*</label>
-          <input type="text" name="mobile" placeholder="Mobile" onChange={handleChange} required />
+          <label htmlFor="mobileNumber">mobileNumber*</label>
+          <input type="text" name="mobileNumber" placeholder="mobileNumber" onChange={handleChange} required />
         </div>
         <div className="form-group">
           <label htmlFor="relativeName">Relative Name</label>

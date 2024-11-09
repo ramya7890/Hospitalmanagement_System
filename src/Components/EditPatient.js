@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import './EditPatient.css';
-// import axios from  'axios';
+import axios from  'axios';
 
 const EditPatient = () => {
   const [patientDetails, setPatientDetails] = useState({
     firstName: '',
     middleName: '',
     lastName: '',
-    dob: '',
+    dateOfBirth: '',
     address: '',
     state: '',
     country: '',
-    mobile: '',
+    mobileNumber: '',
     reports: null,
     illnessDetails: '',
     password: '',
     confirmPassword: '',
-    uniqueId: '',
+    patientID: '',
   });
   
   const [patients, setPatients] = useState([]);
@@ -24,10 +24,24 @@ const EditPatient = () => {
   const [editMode, setEditMode] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
 
+  // useEffect(() => {
+  //   // Load existing patients from local storage 
+  //   const savedPatients = JSON.parse(localStorage.getItem('patients')) || [];
+  //   setPatients(savedPatients);
+  // }, []);
+
   useEffect(() => {
-    // Load existing patients from local storage 
-    const savedPatients = JSON.parse(localStorage.getItem('patients')) || [];
-    setPatients(savedPatients);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/hospitalManagement/patients');
+        console.log(response.data); // Handle your response data here
+        setPatients(response.data);
+      } catch (error) {
+        console.error('There was a problem with the axios operation:', error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleChange = (e) => {
@@ -103,12 +117,12 @@ const EditPatient = () => {
       firstName: '',
       middleName: '',
       lastName: '',
-      dob: '',
+      dateOfBirth: '',
       address: '',
       location: '',  // Reset location field
       state: '',
       country: '',
-      mobile: '',
+      mobileNumber: '',
       reports: null,
       illnessDetails: '',
       password: '',
@@ -149,7 +163,7 @@ const EditPatient = () => {
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Date of Birth</th>
-                <th>Mobile</th>
+                <th>mobileNumber</th>
                 <th>Address</th>
                 <th>ID</th>
                 <th>Actions</th>
@@ -157,16 +171,16 @@ const EditPatient = () => {
             </thead>
             <tbody>
               {patients.map((patient) => (
-                <tr key={patient.uniqueId}>
+                <tr key={patient.patientID}>
                   <td>{patient.firstName}</td>
                   <td>{patient.lastName}</td>
-                  <td>{patient.dob}</td>
-                  <td>{patient.mobile}</td>
+                  <td>{patient.dateOfBirth}</td>
+                  <td>{patient.mobileNumber}</td>
                   <td>{patient.address}</td>
-                  <td>{patient.uniqueId}</td>
+                  <td>{patient.patientID}</td>
                   <td>
-                    <button onClick={() => handleEdit(patient.uniqueId)}>Edit</button>
-                    <button onClick={() => handleDelete(patient.uniqueId)}>Delete</button>
+                    <button onClick={() => handleEdit(patient.patientID)}>Edit</button>
+                    <button onClick={() => handleDelete(patient.patientID)}>Delete</button>
                   </td>
                 </tr>
               ))}
@@ -186,8 +200,8 @@ const EditPatient = () => {
               <label htmlFor='lastName'>Last Name*</label>
               <input type='text' name='lastName' value={patientDetails.lastName} placeholder="Enter Last Name"
                 onChange={handleChange} required />
-              <label htmlFor='dob'>Date Of Birth*</label>
-              <input type='date' name='dob' value={patientDetails.dob} onChange={handleChange} required />
+              <label htmlFor='dateOfBirth'>Date Of Birth*</label>
+              <input type='date' name='dateOfBirth' value={patientDetails.dateOfBirth} onChange={handleChange} required />
               <label htmlFor='address'>Address*</label>
               <input type='text' name='address' value={patientDetails.address} placeholder="Enter Address"
                 onChange={handleChange} required />
@@ -202,8 +216,8 @@ const EditPatient = () => {
                 onChange={handleChange} required />
             </div>
             <div className="form-right">
-              <label htmlFor='mobile'>Mobile*</label>
-              <input type='text' name='mobile' value={patientDetails.mobile} placeholder="Enter Mobile"
+              <label htmlFor='mobileNumber'>mobileNumber*</label>
+              <input type='text' name='mobileNumber' value={patientDetails.mobileNumber} placeholder="Enter mobileNumber"
                 onChange={handleChange} required />
               <label htmlFor='illnessDetails'>Illness Details*</label>
               <textarea name='illnessDetails' value={patientDetails.illnessDetails} placeholder="Existing Illness"
