@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './AdminLogin.css';
 
 const AdminLogin = () => {
-  const [credentials, setCredentials] = useState({ uniqueId: '', password: '' });
+  const [credentials, setCredentials] = useState({ uniqueId: '' , password: '' });
   const [adminList, setAdminList] = useState([]);
   const navigate = useNavigate();
 

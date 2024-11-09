@@ -20,7 +20,7 @@ const HomePage = () => {
         <div className="homepage-welcome-grid">
           <motion.div
             className="welcome-image-container"
-            whileHover={{ rotate: 360 }}
+            // whileHover={{ rotate: 360 }}
             transition={{ duration: 0.8 }}
           >
             <img src="Doctor1.jpg" alt="Doctor Team" className="welcome-image shadow-lg" />

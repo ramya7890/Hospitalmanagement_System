@@ -10,7 +10,6 @@ function Register() {
     lastName: '',
     dob: '',
     address: '',
-    location: '',
     state: '',
     country: '',
     mobile: '',

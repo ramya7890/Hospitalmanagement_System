@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './AddAdmin.css';
-import { useParams } from 'react-router-dom';
+
 
 const AddAdmin = () => {
   const [admins, setAdmins] = useState([]);

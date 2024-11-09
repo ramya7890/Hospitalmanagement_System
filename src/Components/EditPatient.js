@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './EditPatient.css';
+// import axios from  'axios';
 
 const EditPatient = () => {
   const [patientDetails, setPatientDetails] = useState({
@@ -8,7 +9,6 @@ const EditPatient = () => {
     lastName: '',
     dob: '',
     address: '',
-    location: '',  // Added location field
     state: '',
     country: '',
     mobile: '',
@@ -37,6 +37,7 @@ const EditPatient = () => {
         ...prevDetails, //spread operator(concordination)
         [name]: files,
       }));
+      
     } else {
       setPatientDetails((prevDetails) => ({
         ...prevDetails,
@@ -44,6 +45,7 @@ const EditPatient = () => {
       }));
     }
   };
+  
 
   const generateUniqueId = () => {
     const timestamp = Date.now();
@@ -57,8 +59,7 @@ const EditPatient = () => {
       alert('Passwords do not match');
       return;
     }
-
-    if (!editMode) {
+   if (!editMode) {
       const uniqueId = generateUniqueId();
       const newPatient = { ...patientDetails, uniqueId };
       const updatedPatients = [...patients, newPatient];
@@ -76,8 +77,12 @@ const EditPatient = () => {
     
     resetForm();
   };
+  console.log(patientDetails)
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
+
+    // const result = await axios.get(`http://localhost:8080/hospitalManagement/patient/${searchQuery}`)
+    //  console.log(result.data) 
     const result = patients.filter(
       (patient) =>
         patient.uniqueId.includes(searchQuery)

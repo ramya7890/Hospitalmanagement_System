@@ -23,7 +23,7 @@ const FindDoctor = () => {
     setAppointments(savedAppointments); // Load all appointments from local storage
   }, []);
 
-  const handlePatientSelect = (patient) => {
+  const handleFindPatient = (patient) => {
     setSelectedPatient(patient);
 
   const doctorsInSameLocation = doctorList.filter(
@@ -57,7 +57,6 @@ const FindDoctor = () => {
     existingAppointments.push(newAppointment);
     localStorage.setItem('appointments', JSON.stringify(existingAppointments));
     setAppointments(existingAppointments); // Update appointments state
-
     setAppointmentDetails(newAppointment);
     alert(`Appointment booked successfully for ${newAppointment.patient} with ${newAppointment.doctor} on ${newAppointment.date} at ${newAppointment.time}`);
 
@@ -124,7 +123,7 @@ const FindDoctor = () => {
                     <td>{patient.mobile}</td>
                     <td>
                       {!appointmentDetails && (
-                        <button  onClick={() => handlePatientSelect(patient)}>
+                        <button  onClick={() => handleFindPatient(patient)}>
                           Find Doctor
                         </button>
                       )}

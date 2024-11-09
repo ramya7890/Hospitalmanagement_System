@@ -14,7 +14,6 @@ function PatientLogin() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const existingPatients = JSON.parse(localStorage.getItem('patients')) || [];
     const authenticatedPatient = existingPatients.find(
       (patient) => patient.uniqueId === credentials.uniqueId && patient.password === credentials.password
