@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './EditPatient.css';
-import axios from  'axios';
+import axios from 'axios';
 
 const EditPatient = () => {
   const [patientDetails, setPatientDetails] = useState({
@@ -8,17 +8,15 @@ const EditPatient = () => {
     middleName: '',
     lastName: '',
     dateOfBirth: '',
-    address: '',
+    location: '',
     state: '',
     country: '',
     mobileNumber: '',
     reports: null,
-    illnessDetails: '',
-    password: '',
-    confirmPassword: '',
+    existingIllness: '',
     patientID: '',
   });
-  
+
   const [patients, setPatients] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [editMode, setEditMode] = useState(false);
@@ -29,19 +27,17 @@ const EditPatient = () => {
   //   const savedPatients = JSON.parse(localStorage.getItem('patients')) || [];
   //   setPatients(savedPatients);
   // }, []);
-
+  const fetchPatientslist = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/hospitalManagement/patients');
+      console.log(response.data); // Handle your response data here
+      setPatients(response.data);
+    } catch (error) {
+      console.error('There was a problem with the axios operation:', error);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/hospitalManagement/patients');
-        console.log(response.data); // Handle your response data here
-        setPatients(response.data);
-      } catch (error) {
-        console.error('There was a problem with the axios operation:', error);
-      }
-    };
-
-    fetchData();
+    fetchPatientslist();
   }, []);
 
   const handleChange = (e) => {
@@ -51,7 +47,7 @@ const EditPatient = () => {
         ...prevDetails, //spread operator(concordination)
         [name]: files,
       }));
-      
+
     } else {
       setPatientDetails((prevDetails) => ({
         ...prevDetails,
@@ -59,56 +55,53 @@ const EditPatient = () => {
       }));
     }
   };
-  
 
-  const generateUniqueId = () => {
-    const timestamp = Date.now();
-    const randomNumber = Math.floor(Math.random() * 1000);
-    return `${timestamp}-${randomNumber}`;
-  };
 
-  const handleSubmit = (e) => {
+  // const generateUniqueId = () => {
+  //   const timestamp = Date.now();
+  //   const randomNumber = Math.floor(Math.random() * 1000);
+  //   return `${timestamp}-${randomNumber}`;
+  // };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (patientDetails.password !== patientDetails.confirmPassword) {
-      alert('Passwords do not match');
-      return;
+    try {
+      const patientData = { ...patientDetails };
+      delete patientData.patientID;
+      const response = await axios.put(`http://localhost:8080/hospitalManagement/patient/${patientDetails.patientID}`, patientData);
+      console.log('Patient updated successfully:', response.data);
+      alert('Patient updated successfully');
+      fetchPatientslist();
+    } catch (error) {
+      console.error('Error updating patient:', error);
+      alert('Failed to update patient');
     }
-   if (!editMode) {
-      const uniqueId = generateUniqueId();
-      const newPatient = { ...patientDetails, uniqueId };
-      const updatedPatients = [...patients, newPatient];
-      setPatients(updatedPatients);
-      localStorage.setItem('patients', JSON.stringify(updatedPatients));
-      alert(`Successfully registered! Your ID is ${uniqueId}`);
-    } else {
-      const updatedPatients = patients.map((patient) =>
-        patient.uniqueId === patientDetails.uniqueId ? patientDetails : patient
-      );
-      setPatients(updatedPatients);
-      localStorage.setItem('patients', JSON.stringify(updatedPatients));
-      alert('Patient details updated successfully');
-    }
-    
     resetForm();
   };
-  console.log(patientDetails)
+
+  // console.log(patientDetails)
 
   const handleSearch = async () => {
 
     // const result = await axios.get(`http://localhost:8080/hospitalManagement/patient/${searchQuery}`)
     //  console.log(result.data) 
-    const result = patients.filter(
-      (patient) =>
-        patient.uniqueId.includes(searchQuery)
-    );
-
-    if (result.length > 0) {
-      setPatientDetails(result[0]); // Fill form with the patient details
+    try {
+      const response = await axios.get(`http://localhost:8080/hospitalManagement/patient/${searchQuery}`);
+      setPatientDetails(response.data); // Set the fetched patient data
       setEditMode(true); // Set to edit mode since we found the patient
-      setFormVisible(true); // Show the form
-    } else {
-      alert('Patient not found');
-      setFormVisible(false); // Hide the form if not found
+      setFormVisible(true)
+    } catch (err) {
+      if (err.response) {
+        // If the patient is not found, set an error message
+        if (err.response.status === 404) {
+          alert('Patient not found');
+          setFormVisible(false);
+        } else {
+          alert('An error occurred while fetching patient data');
+        }
+      } else {
+        alert('An unexpected error occurred');
+      }
     }
   };
 
@@ -118,35 +111,40 @@ const EditPatient = () => {
       middleName: '',
       lastName: '',
       dateOfBirth: '',
-      address: '',
       location: '',  // Reset location field
       state: '',
       country: '',
       mobileNumber: '',
       reports: null,
-      illnessDetails: '',
-      password: '',
-      confirmPassword: '',
-      uniqueId: '',
+      existingIllness: '',
+      patientID: '',
     });
     setEditMode(false);
     setFormVisible(false); // Reset form visibility
   };
 
-  const handleEdit = (uniqueId) => {
-    const patientToEdit = patients.find(patient => patient.uniqueId === uniqueId);
+  const handleEdit = (patientID) => {
+    const patientToEdit = patients.find(patient => patient.patientID === patientID);
     setPatientDetails(patientToEdit);
     setEditMode(true);
     setFormVisible(true);
   };
 
-  const handleDelete = (uniqueId) => {
+  const handleDelete = async (patientID) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this patient?');//window-alert
     if (confirmDelete) {
-      const updatedPatients = patients.filter(patient => patient.uniqueId !== uniqueId);
-      setPatients(updatedPatients);
-      localStorage.setItem('patients', JSON.stringify(updatedPatients));
-      alert('Patient deleted successfully');
+      try {
+        const response = await axios.delete(`http://localhost:8080/hospitalManagement/patient/${patientID}`);
+        alert(response.data); // Set success message
+        fetchPatientslist();
+      } catch (err) {
+        if (err.response) {
+          // Handle error responses from the server
+          alert(err.response.data || 'An error occurred while deleting the patient.');
+        } else {
+          alert('An unexpected error occurred');
+        }
+      }
     }
   };
 
@@ -164,7 +162,7 @@ const EditPatient = () => {
                 <th>Last Name</th>
                 <th>Date of Birth</th>
                 <th>mobileNumber</th>
-                <th>Address</th>
+                <th>Location</th>
                 <th>ID</th>
                 <th>Actions</th>
               </tr>
@@ -176,7 +174,7 @@ const EditPatient = () => {
                   <td>{patient.lastName}</td>
                   <td>{patient.dateOfBirth}</td>
                   <td>{patient.mobileNumber}</td>
-                  <td>{patient.address}</td>
+                  <td>{patient.location}</td>
                   <td>{patient.patientID}</td>
                   <td>
                     <button onClick={() => handleEdit(patient.patientID)}>Edit</button>
@@ -202,9 +200,7 @@ const EditPatient = () => {
                 onChange={handleChange} required />
               <label htmlFor='dateOfBirth'>Date Of Birth*</label>
               <input type='date' name='dateOfBirth' value={patientDetails.dateOfBirth} onChange={handleChange} required />
-              <label htmlFor='address'>Address*</label>
-              <input type='text' name='address' value={patientDetails.address} placeholder="Enter Address"
-                onChange={handleChange} required />
+
               <label htmlFor='location'>Location*</label>  {/* Added Location field */}
               <input type='text' name='location' value={patientDetails.location} placeholder="Enter Location"
                 onChange={handleChange} required />
@@ -219,8 +215,8 @@ const EditPatient = () => {
               <label htmlFor='mobileNumber'>mobileNumber*</label>
               <input type='text' name='mobileNumber' value={patientDetails.mobileNumber} placeholder="Enter mobileNumber"
                 onChange={handleChange} required />
-              <label htmlFor='illnessDetails'>Illness Details*</label>
-              <textarea name='illnessDetails' value={patientDetails.illnessDetails} placeholder="Existing Illness"
+              <label htmlFor='existingIllness'>Illness Details*</label>
+              <textarea name='existingIllness' value={patientDetails.existingIllness} placeholder="Existing Illness"
                 onChange={handleChange} required />
               <label htmlFor='reports'>Reports*</label>
               <input type='file' name='reports' onChange={handleChange} multiple />

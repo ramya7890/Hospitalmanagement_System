@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PatientLogin.css';
-
+import axios from 'axios'
 function PatientLogin() {
   const [credentials, setCredentials] = useState({ uniqueId: '', password: '' });
   const navigate = useNavigate();
@@ -12,18 +12,27 @@ function PatientLogin() {
     setCredentials({ ...credentials, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const existingPatients = JSON.parse(localStorage.getItem('patients')) || [];
-    const authenticatedPatient = existingPatients.find(
-      (patient) => patient.uniqueId === credentials.uniqueId && patient.password === credentials.password
-    );
+    try {
+      const response = await axios.post('http://localhost:8080/hospitalManagement/patient/login', {
+          patientID: parseInt(credentials.uniqueId),
+          password: credentials.password,
+      });
 
-    if (authenticatedPatient) {
-      alert('Login successful!');
-      navigate('/Pages/PatientLandingScreen'); // Redirects to patient details page
-    } else {
-      alert('Invalid ID or password.');
+      // Handle successful login
+      alert(response.data); // Display success message
+      console.log('Login successful:', response.data);
+      navigate('/Pages/Patientlandingscreen');
+  } catch (error) {
+      // Handle error response
+      if (error.response) {
+          alert(error.response.data); // Display error message
+          console.error('Login failed:', error.response.data);
+      } else {
+          alert('An unexpected error occurred');
+          console.error('Error:', error);
+      }
     }
   };
 

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Register.css';
+import axios from 'axios';
 
 function Register() {
   const [patientDetails, setPatientDetails] = useState({
@@ -9,13 +10,13 @@ function Register() {
     middleName: '',
     lastName: '',
     dateOfBirth: '',
-    address: '',
     state: '',
+    location:'',
     country: '',
     mobileNumber: '',
     relativeName: '',
     relativeMobile: '',
-    illnessDetails: '',
+    existingIllness: '',
     password: '',
     confirmPassword: '',
   });
@@ -27,13 +28,8 @@ function Register() {
     setPatientDetails({ ...patientDetails, [name]: value });
   };
 
-  const generateUniqueId = () => {
-    const timestamp = Date.now();
-    const randomNumber = Math.floor(Math.random() * 1000);
-    return `${timestamp}-${randomNumber}`;
-  };
-
-  const handleSubmit = (e) => {
+ 
+  const handleSubmit = async(e) => {
     e.preventDefault();
     
     const existingPatients = JSON.parse(localStorage.getItem('patients')) || [];
@@ -44,12 +40,18 @@ function Register() {
     } else if (patientDetails.password !== patientDetails.confirmPassword) {
       alert('Passwords do not match');
     } else {
-      const uniqueId = generateUniqueId();
-      const newPatient = { ...patientDetails, uniqueId };
-      localStorage.setItem('patients', JSON.stringify([...existingPatients, newPatient]));
-
-      alert('Successfully registered! Your ID is ' + uniqueId);
-      navigate("/PatientLogin");
+      try {
+        const patientData = {...patientDetails};
+        delete patientData.confirmPassword;
+        const response = await axios.post(`http://localhost:8080/hospitalManagement/patient`, patientData);
+        console.log('Patient created successfully:', response.data);
+        alert('Patient created successfully');
+        navigate("/PatientLogin");
+    } catch (error) {
+        console.error('Error creating patient:', error);
+        alert('Failed to created patient');
+    }
+      
     }
   };
 
@@ -73,10 +75,7 @@ function Register() {
           <label htmlFor="dateOfBirth">Date Of Birth*</label>
           <input type="date" name="dateOfBirth" onChange={handleChange} required />
         </div>
-        <div className="form-group full-width">
-          <label htmlFor="address">Address*</label>
-          <input type="text" name="address" placeholder="Address" onChange={handleChange} required />
-        </div>
+  
         <div className="form-group">
           <label htmlFor="location">Location*</label>
           <input type="text" name="location" placeholder="Enter Location" onChange={handleChange} required />
@@ -102,8 +101,8 @@ function Register() {
           <input type="text" name="relativeMobile" placeholder="Relative Mobile" onChange={handleChange} />
         </div>
         <div className="form-group full-width">
-          <label htmlFor="illnessDetails">Illness Details*</label>
-          <textarea name="illnessDetails" placeholder="Existing Illness" onChange={handleChange} required></textarea>
+          <label htmlFor="existingIllness">Existing Illness*</label>
+          <textarea name="existingIllness" placeholder="Existing Illness" onChange={handleChange} required></textarea>
         </div>
         <div className="form-group">
           <label htmlFor="password">Password*</label>
