@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './AddDoctor.css';
+import axios from 'axios';
 
 const AddDoctor = () => {
     const [doctor, setDoctor] = useState({
-        id: '',
+        doctorID: '',
         name: '',
-        qualification: '',
-        experience: '',
-        specialty: '',
+        educationalQualification: '',
+        yearsOfExperience: '',
+        speciality: '',
         location: ''
     });
     const [doctorsList, setDoctorsList] = useState([]);
@@ -16,11 +17,38 @@ const AddDoctor = () => {
     const [searchLocation, setSearchLocation] = useState(''); // State for search input
     const [showForm, setShowForm] = useState(false); // State to control the visibility of the form
 
+    // useEffect(() => {
+    //     // Load existing doctors from local storage
+    //     const savedDoctors = JSON.parse(localStorage.getItem('doctors')) || [];
+    //     setDoctorsList(savedDoctors);
+    // }, []);
+    // const fetchDoctorsList = async () => {
+    //     try {
+    //       const response = await axios.get('http://localhost:8080/hospitalManagement/doctors');
+    //       console.log(response.data); // Handle your response data here
+    //       setDoctorsList(response.data);
+    //     } catch (error) {
+    //       console.error('There was a problem with the axios operation:', error);
+    //     }
+    //   };
+    //   useEffect(() => {
+    //     fetchDoctorsList();
+    //   }, []);
+    const fetchDoctorsList = async (location = '') => {
+        try {
+            const response = await axios.get(`http://localhost:8080/hospitalManagement/doctors/search?location=${location}`);
+            console.log(response.data); // Handle your response data here
+            setDoctorsList(response.data);
+        } catch (error) {
+            console.error('There was a problem with the axios operation:', error);
+        }
+    };
+
     useEffect(() => {
-        // Load existing doctors from local storage
-        const savedDoctors = JSON.parse(localStorage.getItem('doctors')) || [];
-        setDoctorsList(savedDoctors);
-    }, []);
+        // Fetch all doctors initially or based on searchLocation
+        fetchDoctorsList(searchLocation);
+    }, [searchLocation]); // Fetch doctors whenever searchLocation changes
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,57 +57,94 @@ const AddDoctor = () => {
         });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (doctor.name && doctor.qualification && doctor.experience && doctor.specialty && doctor.location) {
-            if (editMode) {
-                // Update doctor information
-                const updatedDoctors = doctorsList.map((doc) =>
-                    doc.id === doctor.id ? doctor : doc
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Check if all required fields are filled
+    if (doctor.name && doctor.educationalQualification && doctor.yearsOfExperience && doctor.speciality && doctor.location) {
+        if (editMode) {
+            // Update doctor information via API
+            try {
+                const response = await axios.put(`http://localhost:8080/hospitalManagement/doctor/${doctor.doctorID}`, doctor);
+                const updatedDoctor = response.data;
+
+                // Update the local state with the updated doctor
+                const updatedDoctorsList = doctorsList.map((doc) =>
+                    doc.doctorID === updatedDoctor.doctorID ? updatedDoctor : doc
                 );
-                setDoctorsList(updatedDoctors);
-                localStorage.setItem('doctors', JSON.stringify(updatedDoctors));
-                setEditMode(false);
-                setCurrentIndex(null);
-            } else {
-                // Add new doctor with a unique ID
-                const newDoctor = { ...doctor, id: Date.now().toString() }; // Generate a unique ID based on timestamp
-                const updatedDoctors = [...doctorsList, newDoctor];
-                setDoctorsList(updatedDoctors);
-                localStorage.setItem('doctors', JSON.stringify(updatedDoctors));
+                setDoctorsList(updatedDoctorsList);
+                alert('Doctor updated successfully'); // Optional: Notify user of success
+            } catch (error) {
+                console.error('Error updating doctor:', error);
+                alert('Failed to update doctor. Please try again.');
             }
-            resetForm();
-            setShowForm(false); // Hide the form after submission
+            setEditMode(false);
+            setCurrentIndex(null);
         } else {
-            alert('Please fill in all fields');
+            // Add new doctor via API
+            try {
+                const response = await axios.post('http://localhost:8080/hospitalManagement/doctor', doctor);
+                const newDoctor = response.data;
+
+                // Update the local state with the new doctor
+                setDoctorsList([...doctorsList, newDoctor]);
+                alert('Doctor added successfully'); // Optional: Notify user of success
+            } catch (error) {
+                console.error('Error adding new doctor:', error);
+                alert('Failed to add new doctor. Please try again.');
+            }
         }
-    };
+        
+        // Reset the form and hide it after successful submission
+        resetForm();
+        setShowForm(false);
+    } else {
+        alert('Please fill in all fields');
+    }
+};
 
     const resetForm = () => {
         setDoctor({
-            id: '',
+            doctorID: '',
             name: '',
-            qualification: '',
-            experience: '',
-            specialty: '',
+            educationalQualification: '',
+            yearsOfExperience: '',
+            speciality: '',
             location: ''
         });
     };
 
-    const handleEdit = (id) => {
-        const doctorToEdit = doctorsList.find(doc => doc.id === id);
+    const handleEdit = (doctorID) => {
+        const doctorToEdit = doctorsList.find(doc => doc.doctorID === doctorID);
         setDoctor(doctorToEdit);
         setEditMode(true);
         setCurrentIndex(doctorsList.indexOf(doctorToEdit));
         setShowForm(true); // Show the form when editing
     };
 
-    const handleDelete = (id) => {
+    /*const handleDelete = (doctorID) => {
         const confirmDelete = window.confirm('Are you sure you want to delete this doctor?');
         if (confirmDelete) {
-            const updatedDoctors = doctorsList.filter(doc => doc.id !== id);
+            const updatedDoctors = doctorsList.filter(doc => doc.doctorID !== doctorID);
             setDoctorsList(updatedDoctors);
             localStorage.setItem('doctors', JSON.stringify(updatedDoctors));
+        }
+    };*/
+    const handleDelete = async (doctorID) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this doctor?');
+        if (confirmDelete) {
+            try {
+                // Call the delete API
+                await axios.delete(`http://localhost:8080/hospitalManagement/doctor/${doctorID}`);
+                
+                // Update the local state to remove the deleted doctor
+                const updatedDoctors = doctorsList.filter(doc => doc.doctorID !== doctorID);
+                setDoctorsList(updatedDoctors);
+                alert('Doctor deleted successfully'); // Optional: Notify user of success
+            } catch (error) {
+                console.error('Error deleting doctor:', error);
+                alert('Failed to delete doctor. Please try again.');
+            }
         }
     };
 
@@ -104,9 +169,9 @@ const AddDoctor = () => {
                     <thead>
                         <tr>
                             <th>Doctor Name</th>
-                            <th>Qualification</th>
+                            <th>educationalQualification</th>
                             <th>Years Of Experience</th>
-                            <th>Specialty</th>
+                            <th>speciality</th>
                             <th>Location</th>
                             <th>Actions</th>
                         </tr>
@@ -118,15 +183,15 @@ const AddDoctor = () => {
                             </tr>
                         ) : (
                             filteredDoctors.map((doc) => (
-                                <tr key={doc.id}>
+                                <tr key={doc.doctorID}>
                                     <td>{doc.name}</td>
-                                    <td>{doc.qualification}</td>
-                                    <td>{doc.experience}</td>
-                                    <td>{doc.specialty}</td>
+                                    <td>{doc.educationalQualification}</td>
+                                    <td>{doc.yearsOfExperience}</td>
+                                    <td>{doc.speciality}</td>
                                     <td>{doc.location}</td>
                                     <td>
-                                        <button onClick={() => handleEdit(doc.id)}>Edit</button>
-                                        <button onClick={() => handleDelete(doc.id)}>Delete</button>
+                                        <button onClick={() => handleEdit(doc.doctorID)}>Edit</button>
+                                        <button onClick={() => handleDelete(doc.doctorID)}>Delete</button>
                                         
                                     </td>
                                 </tr>
@@ -148,15 +213,15 @@ const AddDoctor = () => {
                         </div>
                         <div>
                             <label>Qualification:</label>
-                            <input type="text" name='qualification' value={doctor.qualification} onChange={handleChange} placeholder='Enter qualification' />
+                            <input type="text" name='educationalQualification' value={doctor.educationalQualification} onChange={handleChange} placeholder='Enter qualification' />
                         </div>
                         <div>
                             <label>Years Of Experience:</label>
-                            <input type="text" name='experience' value={doctor.experience} onChange={handleChange} placeholder='Enter years of experience' />
+                            <input type="text" name='yearsOfExperience' value={doctor.yearsOfExperience} onChange={handleChange} placeholder='Enter years of experience' />
                         </div>
                         <div>
-                            <label>Specialty:</label>
-                            <input type="text" name='specialty' value={doctor.specialty} onChange={handleChange} placeholder='Enter specialty' />
+                            <label>Speciality:</label>
+                            <input type="text" name='speciality' value={doctor.speciality} onChange={handleChange} placeholder='Enter specialty' />
                         </div>
                         <div>
                             <label>Location:</label>
