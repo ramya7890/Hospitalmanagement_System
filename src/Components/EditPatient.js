@@ -21,33 +21,44 @@ const EditPatient = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
+  const [fileError, setFileError] = useState('');
 
-  // useEffect(() => {
-  //   // Load existing patients from local storage 
-  //   const savedPatients = JSON.parse(localStorage.getItem('patients')) || [];
-  //   setPatients(savedPatients);
-  // }, []);
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB in bytes
+
+  // Fetching patients from the server
   const fetchPatientslist = async () => {
     try {
       const response = await axios.get('http://localhost:8080/hospitalManagement/patients');
-      console.log(response.data); // Handle your response data here
       setPatients(response.data);
     } catch (error) {
       console.error('There was a problem with the axios operation:', error);
     }
   };
+
   useEffect(() => {
     fetchPatientslist();
   }, []);
 
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     if (name === 'reports') {
+      // Check if files were selected and validate size
+      if (files && files[0]) {
+        const file = files[0];
+        if (file.size > MAX_FILE_SIZE) {
+          setFileError('File size should not exceed 10 MB.');
+          return;
+        } else {
+          setFileError('');
+        }
+      }
+
       setPatientDetails((prevDetails) => ({
-        ...prevDetails, //spread operator(concordination)
+        ...prevDetails,
         [name]: files,
       }));
-
     } else {
       setPatientDetails((prevDetails) => ({
         ...prevDetails,
@@ -56,68 +67,54 @@ const EditPatient = () => {
     }
   };
 
-
-  // const generateUniqueId = () => {
-  //   const timestamp = Date.now();
-  //   const randomNumber = Math.floor(Math.random() * 1000);
-  //   return `${timestamp}-${randomNumber}`;
-  // };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const patientData = { ...patientDetails };
-  //     delete patientData.patientID;
-  //     const response = await axios.put(`http://localhost:8080/hospitalManagement/patient/${patientDetails.patientID}`, patientData);
-  //     console.log('Patient updated successfully:', response.data);
-  //     alert('Patient updated successfully');
-  //     fetchPatientslist();
-  //   } catch (error) {
-  //     console.error('Error updating patient:', error);
-  //     alert('Failed to update patient');
-  //   }
-  //   resetForm();
-  // };
+  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-        const formData = new FormData();
-        const patientData = new Blob([JSON.stringify(patientDetails)], { type: 'application/json' });
-        formData.append('patientDetails', patientData);
-        if (patientDetails.reports) {
-            for (let i = 0; i < patientDetails.reports.length; i++) {
-                formData.append('reports', patientDetails.reports[i]);
-            }
-        }
-
-        const response = await axios.put(`http://localhost:8080/hospitalManagement/patient/${patientDetails.patientID}`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        console.log('Patient updated successfully:', response.data);
-        alert('Patient updated successfully');
-        fetchPatientslist();
-    } catch (error) {
-        console.error('Error updating patient:', error);
-        alert('Failed to update patient');
+    if (fileError) {
+      alert('Please resolve the file size error before submitting.');
+      return;
     }
+
+    try {
+      const formData = new FormData();
+      const patientData = new Blob([JSON.stringify(patientDetails)], { type: 'application/json' });
+      formData.append('patientDetails', patientData);
+
+      if (patientDetails.reports) {
+        for (let i = 0; i < patientDetails.reports.length; i++) {
+          formData.append('reports', patientDetails.reports[i]);
+        }
+      }
+
+      const response = await axios.put(
+        `http://localhost:8080/hospitalManagement/patient/${patientDetails.patientID}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      console.log('Patient updated successfully:', response.data);
+      alert('Patient updated successfully');
+      fetchPatientslist();
+    } catch (error) {
+      console.log(error);
+      alert('Failed to update patient');
+    }
+
     resetForm();
-};
-  // console.log(patientDetails)
+  };
 
+  // Search for a patient
   const handleSearch = async () => {
-
-    // const result = await axios.get(`http://localhost:8080/hospitalManagement/patient/${searchQuery}`)
-    //  console.log(result.data) 
     try {
       const response = await axios.get(`http://localhost:8080/hospitalManagement/patient/${searchQuery}`);
       setPatientDetails(response.data); // Set the fetched patient data
       setEditMode(true); // Set to edit mode since we found the patient
-      setFormVisible(true)
+      setFormVisible(true);
     } catch (err) {
       if (err.response) {
-        // If the patient is not found, set an error message
         if (err.response.status === 404) {
           alert('Patient not found');
           setFormVisible(false);
@@ -130,13 +127,14 @@ const EditPatient = () => {
     }
   };
 
+  // Reset the form
   const resetForm = () => {
     setPatientDetails({
       firstName: '',
       middleName: '',
       lastName: '',
       dateOfBirth: '',
-      location: '',  // Reset location field
+      location: '',
       state: '',
       country: '',
       mobileNumber: '',
@@ -145,7 +143,8 @@ const EditPatient = () => {
       patientID: '',
     });
     setEditMode(false);
-    setFormVisible(false); // Reset form visibility
+    setFormVisible(false);
+    setFileError('');
   };
 
   const handleEdit = (patientID) => {
@@ -156,7 +155,7 @@ const EditPatient = () => {
   };
 
   const handleDelete = async (patientID) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this patient?');//window-alert
+    const confirmDelete = window.confirm('Are you sure you want to delete this patient?');
     if (confirmDelete) {
       try {
         const response = await axios.delete(`http://localhost:8080/hospitalManagement/patient/${patientID}`);
@@ -164,7 +163,6 @@ const EditPatient = () => {
         fetchPatientslist();
       } catch (err) {
         if (err.response) {
-          // Handle error responses from the server
           alert(err.response.data || 'An error occurred while deleting the patient.');
         } else {
           alert('An unexpected error occurred');
@@ -178,7 +176,7 @@ const EditPatient = () => {
       <div className='patient-container'>
         <h2>Patients List</h2>
         {patients.length === 0 ? (
-          <p>No patients found.</p> // Message when no patients are found
+          <p>No patients found.</p>
         ) : (
           <table>
             <thead>
@@ -186,7 +184,7 @@ const EditPatient = () => {
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Date of Birth</th>
-                <th>mobileNumber</th>
+                <th>Mobile Number</th>
                 <th>Location</th>
                 <th>ID</th>
                 <th>Actions</th>
@@ -215,44 +213,115 @@ const EditPatient = () => {
           <form onSubmit={handleSubmit} className="patient-form">
             <div className="form-left">
               <label htmlFor='firstName'>First Name*</label>
-              <input type='text' name='firstName' value={patientDetails.firstName} placeholder="Enter First Name"
-                onChange={handleChange} required />
+              <input
+                type='text'
+                name='firstName'
+                value={patientDetails.firstName}
+                placeholder="Enter First Name"
+                onChange={handleChange}
+                required
+              />
               <label htmlFor='middleName'>Middle Name</label>
-              <input type='text' name='middleName' value={patientDetails.middleName} placeholder="Enter Middle Name"
-                onChange={handleChange} />
+              <input
+                type='text'
+                name='middleName'
+                value={patientDetails.middleName}
+                placeholder="Enter Middle Name"
+                onChange={handleChange}
+              />
               <label htmlFor='lastName'>Last Name*</label>
-              <input type='text' name='lastName' value={patientDetails.lastName} placeholder="Enter Last Name"
-                onChange={handleChange} required />
+              <input
+                type='text'
+                name='lastName'
+                value={patientDetails.lastName}
+                placeholder="Enter Last Name"
+                onChange={handleChange}
+                required
+              />
               <label htmlFor='dateOfBirth'>Date Of Birth*</label>
-              <input type='date' name='dateOfBirth' value={patientDetails.dateOfBirth} onChange={handleChange} required />
+              <input
+                type='date'
+                name='dateOfBirth'
+                value={patientDetails.dateOfBirth}
+                onChange={handleChange}
+                required
+              />
 
-              <label htmlFor='location'>Location*</label>  {/* Added Location field */}
-              <input type='text' name='location' value={patientDetails.location} placeholder="Enter Location"
-                onChange={handleChange} required />
+              <label htmlFor='location'>Location*</label>
+              <input
+                type='text'
+                name='location'
+                value={patientDetails.location}
+                placeholder="Enter Location"
+                onChange={handleChange}
+                required
+              />
               <label htmlFor='state'>State*</label>
-              <input type='text' name='state' value={patientDetails.state} placeholder="Enter State"
-                onChange={handleChange} required />
+              <input
+                type='text'
+                name='state'
+                value={patientDetails.state}
+                placeholder="Enter State"
+                onChange={handleChange}
+                required
+              />
               <label htmlFor='country'>Country*</label>
-              <input type='text' name='country' value={patientDetails.country} placeholder="Enter Country"
-                onChange={handleChange} required />
+              <input
+                type='text'
+                name='country'
+                value={patientDetails.country}
+                placeholder="Enter Country"
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="form-right">
-              <label htmlFor='mobileNumber'>mobileNumber*</label>
-              <input type='text' name='mobileNumber' value={patientDetails.mobileNumber} placeholder="Enter mobileNumber"
-                onChange={handleChange} required />
+              <label htmlFor='mobileNumber'>Mobile Number*</label>
+              <input
+                type='text'
+                name='mobileNumber'
+                value={patientDetails.mobileNumber}
+                placeholder="Enter Mobile Number"
+                onChange={handleChange}
+                required
+              />
               <label htmlFor='existingIllness'>Illness Details*</label>
-              <textarea name='existingIllness' value={patientDetails.existingIllness} placeholder="Existing Illness"
-                onChange={handleChange} required />
+              <textarea
+                name='existingIllness'
+                value={patientDetails.existingIllness}
+                placeholder="Existing Illness"
+                onChange={handleChange}
+                required
+              />
               <label htmlFor='reports'>Reports</label>
-              <input type='file' name='reports' onChange={handleChange} multiple />
+              <input
+                type='file'
+                name='reports'
+                onChange={handleChange}
+                multiple
+              />
+              {fileError && <div style={{ color: 'red', marginTop: '5px' }}>{fileError}</div>}
+
               {!editMode && (
                 <>
                   <label htmlFor='password'>Password*</label>
-                  <input type='password' name='password' value={patientDetails.password} placeholder="Password"
-                    onChange={handleChange} required />
+                  <input
+                    type='password'
+                    name='password'
+                    value={patientDetails.password}
+                    placeholder="Password"
+                    onChange={handleChange}
+                    required
+                  />
                   <label htmlFor='confirmPassword'>Confirm Password*</label>
-                  <input type='password' name='confirmPassword' value={patientDetails.confirmPassword} placeholder="Confirm Password"
-                    onChange={handleChange} required />
+                  <input
+                    type='password'
+                    name='confirmPassword'
+                    value={patientDetails.confirmPassword}
+                    placeholder="Confirm Password"
+                    onChange={handleChange}
+                    required
+                  />
                 </>
               )}
               <button type='submit'>{editMode ? 'Update Patient' : 'Add Patient'}</button>
