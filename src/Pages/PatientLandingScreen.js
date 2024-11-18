@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import axios
 import './PatientLandingScreen.css';
+import { useParams } from 'react-router-dom';
  
-const PatientLandingScreen = ({ patientId }) => {
+const PatientLandingScreen = () => {
+  const { patientId } = useParams();
   const [reports, setReports] = useState([]); // State for reports
   const [appointments, setAppointments] = useState([]); // State for appointments
   const [loadingReports, setLoadingReports] = useState(true); // Loading state for reports
@@ -27,7 +29,7 @@ const PatientLandingScreen = ({ patientId }) => {
     // Fetch appointments from API
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/hospitalManagement/appointments/1000`); // Use patientId in the URL
+        const response = await axios.get(`http://localhost:8080/hospitalManagement/appointments/${patientId}`); // Use patientId in the URL
         console.log(response.data);
         console.log(patientId)
         setAppointments(response.data);
@@ -40,7 +42,8 @@ const PatientLandingScreen = ({ patientId }) => {
     };
     fetchReports();
     fetchAppointments();
-  }, [patientId]); // Add patientId as a dependency
+  }, [patientId]);
+  // Add patientId as a dependency
  
  
   return (
@@ -98,9 +101,9 @@ const PatientLandingScreen = ({ patientId }) => {
             <tbody>
               {appointments.map(appointment => (
                 <tr key={appointment.appointmentId}>
-                  <td>{appointment.doctorId}</td>
-                  <td>{appointment.appointmentDate}</td>
-                  <td>{appointment.appointmentTime}</td>
+                  <td>{appointment.doctorName}</td>
+                  <td>{appointment.date}</td>
+                  <td>{appointment.time}</td>
                   <td>{appointment.existingIllness}</td>
                   <td>{appointment.location}</td>
                   <td>Booked</td>

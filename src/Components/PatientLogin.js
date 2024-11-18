@@ -23,7 +23,7 @@ function PatientLogin() {
       // Handle successful login
       alert(response.data); // Display success message
       console.log('Login successful:', response.data);
-      navigate('/Pages/Patientlandingscreen');
+      navigate(`/Pages/Patientlandingscreen/${credentials.uniqueId}`);
   } catch (error) {
       // Handle error response
       if (error.response) {
