@@ -29,6 +29,7 @@ const PatientLandingScreen = ({ patientId }) => {
       try {
         const response = await axios.get(`http://localhost:8080/hospitalManagement/appointments/1000`); // Use patientId in the URL
         console.log(response.data);
+        console.log(patientId)
         setAppointments(response.data);
       } catch (error) {
         setErrorAppointments('Error fetching appointments');
@@ -96,13 +97,14 @@ const PatientLandingScreen = ({ patientId }) => {
             </thead>
             <tbody>
               {appointments.map(appointment => (
-                <tr key={appointment.id}>
-                  <td>{appointment.doctorName}</td>
-                  <td>{appointment.date}</td>
-                  <td>{appointment.time}</td>
+                <tr key={appointment.appointmentId}>
+                  <td>{appointment.doctorId}</td>
+                  <td>{appointment.appointmentDate}</td>
+                  <td>{appointment.appointmentTime}</td>
                   <td>{appointment.existingIllness}</td>
                   <td>{appointment.location}</td>
-                  <td>{appointment.status}</td>
+                  <td>Booked</td>
+                  
                  
                 </tr>
               ))}
