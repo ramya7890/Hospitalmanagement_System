@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Import axios
 import './AdminLogin.css';
 
 const AdminLogin = () => {
-  const [credentials, setCredentials] = useState({ uniqueId: '' , password: '' });
+  const [credentials, setCredentials] = useState({ adminId: '', password: '', });
   const [adminList, setAdminList] = useState([]);
   const navigate = useNavigate();
 
@@ -17,22 +18,29 @@ const AdminLogin = () => {
     setCredentials({ ...credentials, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const defaultId = '123456';
-    const defaultPassword = 'Ramya';
+    // Create an object to send in the request body
+    const loginAdmin = {
+      adminID: credentials.adminId,
+      password: credentials.password,
+    };
 
-    // Check if the credentials match the default or any registered admin
-    const isDefaultAdmin = credentials.uniqueId === defaultId && credentials.password === defaultPassword;
-    const isRegisteredAdmin = adminList.some((admin) => admin.id === credentials.uniqueId && admin.password === credentials.password
-    );
-
-    if (isDefaultAdmin || isRegisteredAdmin) {
-      alert("Login successful!");
+    try {
+      // Make the POST request to the login API
+      const response = await axios.post('http://localhost:8080/hospitalManagement/admin/login', loginAdmin);
+      
+      // Handle successful login
+      alert(response.data); // Show success message from the response
       navigate("/Pages/AdminLandingScreen");
-    } else {
-      alert("Invalid credentials. Please try again.");
+    } catch (error) {
+      // Handle error response
+      if (error.response && error.response.status === 401) {
+        alert("Invalid admin ID or password");
+      } else {
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -42,9 +50,9 @@ const AdminLogin = () => {
       <form onSubmit={handleSubmit} className="login-form">
         <input
           type="text"
-          name="uniqueId"
+          name="adminId"
           placeholder="Unique ID"
-          value={credentials.uniqueId}
+          value={credentials.adminId}
           onChange={handleChange}
           required
         />

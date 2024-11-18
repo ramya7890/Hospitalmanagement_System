@@ -6,12 +6,12 @@ import axios from 'axios'
 function PatientLogin() {
   const [credentials, setCredentials] = useState({ uniqueId: '', password: '' });
   const navigate = useNavigate();
-
+ 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCredentials({ ...credentials, [name]: value });
   };
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -19,7 +19,7 @@ function PatientLogin() {
           patientID: parseInt(credentials.uniqueId),
           password: credentials.password,
       });
-
+ 
       // Handle successful login
       alert(response.data); // Display success message
       console.log('Login successful:', response.data);
@@ -35,7 +35,7 @@ function PatientLogin() {
       }
     }
   };
-
+ 
   return (
     <div className="patient-login-container">
       <h2 className="patient-login-title">Patient Login</h2>
@@ -63,5 +63,6 @@ function PatientLogin() {
     </div>
   );
 }
-
+ 
 export default PatientLogin;
+ 

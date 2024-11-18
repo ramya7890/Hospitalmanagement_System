@@ -44,8 +44,9 @@ function Register() {
         const patientData = {...patientDetails};
         delete patientData.confirmPassword;
         const response = await axios.post(`http://localhost:8080/hospitalManagement/patient`, patientData);
-        console.log('Patient created successfully:', response.data);
-        alert('Patient created successfully');
+        console.log('Patient created successfully:', response.data.patientID);
+    
+        alert('Patient registered successfully. The registerd patientID is ' + response.data.patientID );
         navigate("/PatientLogin");
     } catch (error) {
         console.error('Error creating patient:', error);

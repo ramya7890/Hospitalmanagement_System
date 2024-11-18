@@ -63,22 +63,47 @@ const EditPatient = () => {
   //   return `${timestamp}-${randomNumber}`;
   // };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const patientData = { ...patientDetails };
+  //     delete patientData.patientID;
+  //     const response = await axios.put(`http://localhost:8080/hospitalManagement/patient/${patientDetails.patientID}`, patientData);
+  //     console.log('Patient updated successfully:', response.data);
+  //     alert('Patient updated successfully');
+  //     fetchPatientslist();
+  //   } catch (error) {
+  //     console.error('Error updating patient:', error);
+  //     alert('Failed to update patient');
+  //   }
+  //   resetForm();
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const patientData = { ...patientDetails };
-      delete patientData.patientID;
-      const response = await axios.put(`http://localhost:8080/hospitalManagement/patient/${patientDetails.patientID}`, patientData);
-      console.log('Patient updated successfully:', response.data);
-      alert('Patient updated successfully');
-      fetchPatientslist();
+        const formData = new FormData();
+        const patientData = new Blob([JSON.stringify(patientDetails)], { type: 'application/json' });
+        formData.append('patientDetails', patientData);
+        if (patientDetails.reports) {
+            for (let i = 0; i < patientDetails.reports.length; i++) {
+                formData.append('reports', patientDetails.reports[i]);
+            }
+        }
+
+        const response = await axios.put(`http://localhost:8080/hospitalManagement/patient/${patientDetails.patientID}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        console.log('Patient updated successfully:', response.data);
+        alert('Patient updated successfully');
+        fetchPatientslist();
     } catch (error) {
-      console.error('Error updating patient:', error);
-      alert('Failed to update patient');
+        console.error('Error updating patient:', error);
+        alert('Failed to update patient');
     }
     resetForm();
-  };
-
+};
   // console.log(patientDetails)
 
   const handleSearch = async () => {
@@ -218,7 +243,7 @@ const EditPatient = () => {
               <label htmlFor='existingIllness'>Illness Details*</label>
               <textarea name='existingIllness' value={patientDetails.existingIllness} placeholder="Existing Illness"
                 onChange={handleChange} required />
-              <label htmlFor='reports'>Reports*</label>
+              <label htmlFor='reports'>Reports</label>
               <input type='file' name='reports' onChange={handleChange} multiple />
               {!editMode && (
                 <>
