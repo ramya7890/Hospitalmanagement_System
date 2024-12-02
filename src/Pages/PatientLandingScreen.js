@@ -16,7 +16,8 @@ const PatientLandingScreen = () => {
     // Fetch reports from API
     const fetchReports = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/hospitalManagement/reports'); // Replace with your API endpoint
+        const response = await axios.get(`http://localhost:8080/hospitalManagement/reports/${patientId}`);
+        console.log(response.data);
         setReports(response.data);
       } catch (error) {
         setErrorReports('Error fetching reports');
@@ -29,9 +30,7 @@ const PatientLandingScreen = () => {
     // Fetch appointments from API
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/hospitalManagement/appointments/${patientId}`); // Use patientId in the URL
-        console.log(response.data);
-        console.log(patientId)
+        const response = await axios.get(`http://localhost:8080/hospitalManagement/appointments/${patientId}`);
         setAppointments(response.data);
       } catch (error) {
         setErrorAppointments('Error fetching appointments');
@@ -40,48 +39,57 @@ const PatientLandingScreen = () => {
         setLoadingAppointments(false);
       }
     };
+ 
     fetchReports();
     fetchAppointments();
   }, [patientId]);
-  // Add patientId as a dependency
- 
  
   return (
     <div className="patient-landing">
       <h1 className="title">Patient Landing Screen</h1>
-      <p className="description">Welcome to the patient portal. Here you can manage your health records,
-         schedule appointments, and more.</p>
-       
+      <p className="description">Welcome to the patient portal. Here you can manage your health records, schedule appointments, and more.</p>
+ 
       {/* Reports Section */}
       <section className="reports-section">
         <h2>Reports</h2>
-        {loadingReports ? ( // Show loading state
+        {loadingReports ? (
           <p>Loading reports...</p>
-        ) : errorReports ? ( // Show error if any
+        ) : errorReports ? (
           <p>{errorReports}</p>
-        ) : reports.length === 0 ? ( // Check if reports are available
+        ) : reports.length === 0 ? (
           <p>No reports available.</p>
         ) : (
-          <ul>
-            {reports.map(report => (
-              <li key={report.id}>
-                <h3>{report.title}</h3>
-                <p>Date: {report.date}</p>
-                <p>Description: {report.description}</p>
-                <a href={report.fileUrl} download>Download</a>
-              </li>
-            ))}
-          </ul>
+          <table className="report-table">
+            <thead>
+              <tr>
+                <th>Uploaded Date</th>
+                <th>Description</th>
+                <th>Download</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reports.map(report => (
+                <tr key={report.reportId}>
+                  <td>{report.uploadDate}</td>
+                  <td>{report.fileName}</td>
+                  <td>
+                    <a href={`http://localhost:8080/hospitalManagement/reports/download/${report.reportId}`} download>
+                      Download
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </section>
  
       {/* Appointments Section */}
       <section className="appointments-section">
         <h2>Upcoming Appointments</h2>
-        {loadingAppointments ? ( // Show loading state
+        {loadingAppointments ? (
           <p>Loading appointments...</p>
-       
-        ) : errorAppointments ? ( // Show error if any
+        ) : errorAppointments ? (
           <p>{errorAppointments}</p>
         ) : appointments.length === 0 ? (
           <p>No upcoming appointments.</p>
@@ -95,7 +103,6 @@ const PatientLandingScreen = () => {
                 <th>Existing Illness</th>
                 <th>Location</th>
                 <th>Status</th>
-         
               </tr>
             </thead>
             <tbody>
@@ -107,8 +114,6 @@ const PatientLandingScreen = () => {
                   <td>{appointment.existingIllness}</td>
                   <td>{appointment.location}</td>
                   <td>Booked</td>
-                  
-                 
                 </tr>
               ))}
             </tbody>
@@ -117,7 +122,8 @@ const PatientLandingScreen = () => {
       </section>
     </div>
   );
-}
+};
  
 export default PatientLandingScreen;
+ 
  
